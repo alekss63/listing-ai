@@ -1,19 +1,11 @@
 [tool.black]
 line-length = 88
 target-version = ["py312"]
-# scripts/update_progress_log.py has an unterminated string and cannot be
-# parsed. Excluded so it does not block every hook run; see TODO in the file.
-force-exclude = '^/scripts/update_progress_log\.py$'
 
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-extend-exclude = [
-    ".venv",
-    "storage",
-    "Pictures",
-    "scripts/update_progress_log.py", # unparseable, see note under [tool.black]
-]
+extend-exclude = [".venv", "storage", "Pictures"]
 
 [tool.ruff.lint]
 # E/F: pycodestyle + pyflakes, I: import sorting, UP: pyupgrade, B: bugbear.
