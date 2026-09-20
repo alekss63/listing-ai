@@ -1,0 +1,69 @@
+{
+    "sku": "06522",
+    "status": "discovered",
+    "garment_type": "T-Shirt",
+    "brand": "Oakley",
+    "size": "M",
+    "color": "Red",
+    "material": "50% Cotton, 50% Polyester",
+    "department": "Men",
+    "condition": "New without tags, Store Display",
+    "condition_notes": "Color-block t-shirt in pink, burgundy, and charcoal gray. No visible defects, stains, holes, or signs of wear. Wrinkles and fold lines are consistent with retail storage and display. Item appears to be new from store overstock.",
+    "measurements": {
+        "pit_to_pit": 21,
+        "length": 28,
+        "sleeve": null,
+        "waist": null,
+        "inseam": null
+    },
+    "title": "Oakley Men's Color Block T-Shirt Size M Red Pink Burgundy Gray",
+    "description": "<div style='font-family: Arial, sans-serif; color: #333;'><h2>Oakley Men's Color Block T-Shirt</h2><p>Stand out with this stylish <strong>Oakley color-block t-shirt</strong> featuring a bold combination of pink, burgundy, and charcoal gray. Perfect for casual wear and adding a pop of color to your wardrobe.</p><h3>Condition</h3><p><strong>New without tags, Store Display</strong></p><p>This item is in excellent condition with no visible defects, stains, holes, or signs of wear. Wrinkles and fold lines are consistent with retail storage and display. Item appears to be new from store overstock.</p><h3>Product Details</h3><ul><li><strong>Brand:</strong> Oakley</li><li><strong>Size:</strong> M (Medium)</li><li><strong>Color:</strong> Red/Pink/Burgundy/Charcoal Gray Color-Block</li><li><strong>Material:</strong> 50% Cotton, 50% Polyester</li><li><strong>Department:</strong> Men's</li></ul><h3>Measurements</h3><ul><li><strong>Pit-to-Pit:</strong> 21 inches</li><li><strong>Length:</strong> 28 inches</li></ul><p>Please refer to measurements to ensure proper fit. All measurements are approximate and taken with the garment laid flat.</p><p>Thank you for shopping with us!</p></div>",
+    "category": null,
+    "item_specifics": {
+        "Condition": "New without tags",
+        "Brand": "Oakley",
+        "Department": "Men",
+        "Size": "M",
+        "Size Type": "Regular",
+        "Color": "Red",
+        "Pattern": "Color Block",
+        "Material": "Cotton Blend",
+        "Sleeve Length": "Short Sleeve",
+        "Style": "T-Shirt",
+        "Features": "Lightweight",
+        "Fit": "Regular",
+        "Fabric Type": "Jersey"
+    },
+    "photos": {
+        "sku_photo": "IMG_2753.jpg",
+        "tag_photos": [
+            "IMG_2754.jpg",
+            "IMG_2759.jpg",
+            "IMG_2763.jpg",
+            "IMG_2764.jpg"
+        ],
+        "measurement_photos": [
+            "IMG_2756.jpg",
+            "IMG_2757.jpg"
+        ],
+        "defect_photos": [],
+        "front_photo": "IMG_2758.jpg",
+        "back_photo": "IMG_2761.jpg",
+        "detail_photos": []
+    },
+    "raw_images": [
+        "IMG_2753.jpg",
+        "IMG_2754.jpg",
+        "IMG_2756.jpg",
+        "IMG_2757.jpg",
+        "IMG_2758.jpg",
+        "IMG_2759.jpg",
+        "IMG_2760.jpg",
+        "IMG_2761.jpg",
+        "IMG_2762.jpg",
+        "IMG_2763.jpg",
+        "IMG_2764.jpg"
+    ],
+    "created_draft": false,
+    "uploaded_to_ebay": false
+}

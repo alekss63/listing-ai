@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ListingAI Dashboard</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f3f4f6; padding: 2rem; margin: 0; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { color: #1f2937; }
+        .card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1rem; cursor: pointer; transition: transform 0.1s; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .card h3 { margin: 0 0 0.5rem 0; color: #111827; }
+        .card p { margin: 0; color: #6b7280; font-size: 0.9rem; }
+        .hidden { display: none; }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; color: white; }
+        .btn-blue { background: #3b82f6; }
+        .btn-gray { background: #6b7280; }
+        .btn-green { background: #10b981; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151; }
+        .form-group input, .form-group textarea { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px; font-family: inherit; font-size: 1rem; box-sizing: border-box; }
+        .form-group textarea { height: 150px; font-family: monospace; }
+        .panel { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .preview-box { border: 1px solid #d1d5db; border-radius: 4px; padding: 1rem; min-height: 150px; background: #fff; }
+        .preview-box:focus { outline: 2px solid #3b82f6; }
+        .hint { font-size: 0.8rem; color: #6b7280; margin-top: 0.25rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 ListingAI Review Dashboard</h1>
+
+        <div id="list-view">
+            <button class="btn btn-blue" onclick="fetchProducts()">Refresh List</button>
+            <div id="product-list" style="margin-top: 1rem;"></div>
+        </div>
+
+        <div id="edit-view" class="hidden">
+            <button class="btn btn-gray" onclick="showList()">← Back to List</button>
+            <h2 id="edit-sku" style="margin-top: 1rem;"></h2>
+
+            <div class="panel" style="margin-top: 1rem;">
+                <div class="form-group">
+                    <label>Generated Title</label>
+                    <input type="text" id="edit-title">
+                </div>
+                <div class="form-group">
+                    <label>Condition</label>
+                    <input type="text" id="edit-condition">
+                </div>
+                <div class="form-group">
+                    <label>Description (raw HTML)</label>
+                    <textarea id="edit-description"></textarea>
+                    <div class="hint">Edit the raw HTML here, OR click inside the visual preview below and edit it directly.</div>
+                </div>
+                <div class="form-group">
+                    <label>Live Visual Preview (click inside to edit)</label>
+                    <div id="html-preview" class="preview-box" contenteditable="true"></div>
+                </div>
+                <button class="btn btn-green" onclick="saveChanges()">💾 Save Changes to Disk</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSku = "";
+        let currentData = {};
+
+        async function fetchProducts() {
+            try {
+                const res = await fetch('/api/products');
+                const products = await res.json();
+
+                const list = document.getElementById('product-list');
+                list.innerHTML = '';
+
+                if (products.length === 0) {
+                    list.innerHTML = '<p>No products found in storage.</p>';
+                    return;
+                }
+
+                products.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.onclick = () => editProduct(p.sku);
+
+                    const title = document.createElement('h3');
+                    title.textContent = p.title || 'No Title';
+
+                    const meta = document.createElement('p');
+                    meta.textContent = `SKU: ${p.sku} | Type: ${p.garment_type || 'Unknown'} | Condition: ${p.condition || 'N/A'}`;
+
+                    card.appendChild(title);
+                    card.appendChild(meta);
+                    list.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Failed to fetch products:", err);
+            }
+        }
+
+        async function editProduct(sku) {
+            currentSku = sku;
+            const res = await fetch(`/api/products/${sku}`);
+            currentData = await res.json();
+
+            document.getElementById('edit-sku').textContent = `Editing: ${sku}`;
+            document.getElementById('edit-title').value = currentData.title || '';
+            document.getElementById('edit-condition').value = currentData.condition || '';
+            document.getElementById('edit-description').value = currentData.description || '';
+            document.getElementById('html-preview').innerHTML = currentData.description || '<em>No description yet.</em>';
+
+            document.getElementById('list-view').classList.add('hidden');
+            document.getElementById('edit-view').classList.remove('hidden');
+        }
+
+        function showList() {
+            document.getElementById('list-view').classList.remove('hidden');
+            document.getElementById('edit-view').classList.add('hidden');
+        }
+
+        async function saveChanges() {
+            currentData.title = document.getElementById('edit-title').value;
+            currentData.condition = document.getElementById('edit-condition').value;
+            // Save the visually edited HTML from the preview box
+            currentData.description = document.getElementById('html-preview').innerHTML;
+
+            const res = await fetch(`/api/products/${currentSku}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(currentData)
+            });
+
+            const result = await res.json();
+            alert(result.message);
+            showList();
+            fetchProducts();
+        }
+
+        // Two-way sync between raw HTML textarea and visual preview
+        document.getElementById('edit-description').addEventListener('input', function () {
+            document.getElementById('html-preview').innerHTML = this.value;
+        });
+        document.getElementById('html-preview').addEventListener('input', function () {
+            document.getElementById('edit-description').value = this.innerHTML;
+        });
+
+        fetchProducts();
+    </script>
+</body>
+</html>

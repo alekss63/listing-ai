@@ -28,5 +28,10 @@ class Settings:
         "ANTHROPIC_API_KEY"
     )
 
+    ANTHROPIC_MODEL = os.getenv(
+        "ANTHROPIC_MODEL",
+        "claude-sonnet-5"
+    )
+
 
 settings = Settings()
