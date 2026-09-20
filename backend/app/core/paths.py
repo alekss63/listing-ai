@@ -15,6 +15,10 @@ STORAGE_PRODUCTS = PRODUCTS  # Alias
 
 LOGS = ROOT / "logs"
 
+# Working directories for generated listing drafts and cached vision output
+DRAFTS = ROOT / "drafts"
+TEMP = ROOT / "temp"
+
 # Ensure critical directories exist
-for directory in [PICTURES, PROCESSED, PRODUCTS, LOGS]:
+for directory in [PICTURES, PROCESSED, PRODUCTS, LOGS, DRAFTS, TEMP]:
     directory.mkdir(parents=True, exist_ok=True)
