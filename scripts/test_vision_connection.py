@@ -14,15 +14,12 @@ def main() -> int:
     temp_image = PROJECT_ROOT / "temp" / "vision_test.jpg"
     temp_image.parent.mkdir(parents=True, exist_ok=True)
 
-    Image.new("RGB", (400, 300), color=(200, 30, 30)).save(
-        temp_image, format="JPEG"
-    )
+    Image.new("RGB", (400, 300), color=(200, 30, 30)).save(temp_image, format="JPEG")
 
     try:
         answer = ask_vision(
             prompt=(
-                "What is the dominant color of this image? "
-                "Reply with one word."
+                "What is the dominant color of this image? " "Reply with one word."
             ),
             image_paths=[temp_image],
         )

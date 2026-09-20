@@ -1,10 +1,9 @@
 import json
 import re
 
-from backend.app.services.ai.vision_client import get_client, DEFAULT_MODEL
-from backend.app.services.discovery.models import ProductManifest
 from backend.app.core.logging import app_logger
-
+from backend.app.services.ai.vision_client import DEFAULT_MODEL, get_client
+from backend.app.services.discovery.models import ProductManifest
 
 LISTING_PROMPT = """You are an expert eBay listing copywriter and SEO specialist.
 I will provide you with structured data extracted from a product's photos.
@@ -58,7 +57,7 @@ def generate_listing(manifest: ProductManifest) -> dict:
     response = client.messages.create(
         model=DEFAULT_MODEL,
         max_tokens=1000,
-        messages=[{"role": "user", "content": prompt}]
+        messages=[{"role": "user", "content": prompt}],
     )
 
     response_text = response.content[0].text
@@ -67,5 +66,7 @@ def generate_listing(manifest: ProductManifest) -> dict:
     try:
         return json.loads(clean_text)
     except json.JSONDecodeError as e:
-        app_logger.error(f"Failed to parse Listing JSON: {e}\nRaw text: {response_text}")
+        app_logger.error(
+            f"Failed to parse Listing JSON: {e}\nRaw text: {response_text}"
+        )
         return {}

@@ -4,7 +4,6 @@ from pathlib import Path
 
 from PIL import Image
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 if str(PROJECT_ROOT) not in sys.path:
@@ -13,9 +12,8 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from backend.app.core.paths import PICTURES
 from backend.app.services.discovery.image_scanner import scan_images
-from backend.app.services.discovery.product_grouper import group_by_product
 from backend.app.services.discovery.manifest_builder import build_manifest
-
+from backend.app.services.discovery.product_grouper import group_by_product
 
 TEST_SKU = "Product1"
 
@@ -67,11 +65,7 @@ def main() -> int:
         product_batches = group_by_product(scanned_images)
 
         target_batch = next(
-            (
-                batch
-                for batch in product_batches
-                if batch.sku == TEST_SKU
-            ),
+            (batch for batch in product_batches if batch.sku == TEST_SKU),
             None,
         )
 

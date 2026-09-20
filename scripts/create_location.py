@@ -12,6 +12,7 @@ load_dotenv(PROJECT_ROOT / ".env")
 EBAY_DOMAIN = os.getenv("EBAY_DOMAIN", "https://api.sandbox.ebay.com")
 USER_TOKEN = os.getenv("EBAY_USER_TOKEN")
 
+
 def get_headers():
     return {
         "Authorization": f"Bearer {USER_TOKEN.strip()}",
@@ -22,6 +23,7 @@ def get_headers():
         "Accept-Language": "en-US",
     }
 
+
 # This is the absolute bare minimum required payload
 MINIMAL_PAYLOAD = {
     "location": {
@@ -30,21 +32,22 @@ MINIMAL_PAYLOAD = {
             "city": "San Jose",
             "stateOrProvince": "CA",
             "postalCode": "95125",
-            "country": "US"
+            "country": "US",
         }
     },
     "name": "ListingAI Warehouse",
-    "merchantLocationStatus": "ENABLED"
+    "merchantLocationStatus": "ENABLED",
 }
 
 VARIANTS = {
     "A: Key 'MAINWH' (No optional fields)": ("MAINWH", MINIMAL_PAYLOAD),
     "B: Key 'DEFAULT' (No optional fields)": ("DEFAULT", MINIMAL_PAYLOAD),
-    "C: Key 'MAINWH' with simple WebUrl": ("MAINWH", {
-        **MINIMAL_PAYLOAD,
-        "locationWebUrl": "http://localhost"
-    }),
+    "C: Key 'MAINWH' with simple WebUrl": (
+        "MAINWH",
+        {**MINIMAL_PAYLOAD, "locationWebUrl": "http://localhost"},
+    ),
 }
+
 
 def main():
     if not USER_TOKEN:
@@ -55,13 +58,14 @@ def main():
         print(f"\n📦 Trying variant {label}...")
         url = f"{EBAY_DOMAIN}/sell/inventory/v1/location/{key}"
         res = httpx.put(url, headers=get_headers(), json=payload, timeout=15.0)
-        
+
         if res.status_code in (200, 201, 204):
             print(f"✅ SUCCESS! Location created with key: {key}")
             return
         print(f"   ❌ {res.status_code}: {res.text[:300]}")
 
     print("\nAll variants failed.")
+
 
 if __name__ == "__main__":
     main()

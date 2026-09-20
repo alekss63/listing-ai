@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+
 import httpx
 from dotenv import load_dotenv
 
@@ -11,6 +12,7 @@ load_dotenv(PROJECT_ROOT / ".env")
 EBAY_DOMAIN = os.getenv("EBAY_DOMAIN", "https://api.sandbox.ebay.com")
 USER_TOKEN = os.getenv("EBAY_USER_TOKEN")
 
+
 def get_headers():
     return {
         "Authorization": f"Bearer {USER_TOKEN.strip()}",
@@ -18,6 +20,7 @@ def get_headers():
         "Accept": "application/json",
         "X-EBAY-C-MARKETPLACE-ID": "EBAY_US",
     }
+
 
 def main():
     print("🔄 Creating Return Policy...")
@@ -29,7 +32,7 @@ def main():
         "returnsAccepted": True,
         "returnMethod": "MONEY_BACK",
         "returnPeriod": {"value": 30, "unit": "DAY"},
-        "returnShippingCostPayer": "BUYER"
+        "returnShippingCostPayer": "BUYER",
     }
     res = httpx.post(url, headers=get_headers(), json=payload, timeout=15.0)
     print(f"Return: {res.status_code} -> {res.text[:200]}")
@@ -39,10 +42,11 @@ def main():
     payload = {
         "categoryGroup": "ALL_EXCLUDING_MOTORS_VEHICLES",
         "marketplaceId": "EBAY_US",
-        "name": "ListingAI Payment Policy"
+        "name": "ListingAI Payment Policy",
     }
     res = httpx.post(url, headers=get_headers(), json=payload, timeout=15.0)
     print(f"Payment: {res.status_code} -> {res.text[:200]}")
+
 
 if __name__ == "__main__":
     main()

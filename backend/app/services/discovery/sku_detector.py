@@ -6,7 +6,6 @@ import easyocr
 
 from backend.app.core.logging import app_logger
 
-
 SKU_PATTERN = re.compile(r"\b0\d{4}\b")
 
 
@@ -70,7 +69,7 @@ def validate_sku(text: str) -> SKUResult:
             confidence=1.0,
             status="confirmed",
             source="ocr",
-            raw_text=text
+            raw_text=text,
         )
 
     return SKUResult(
@@ -78,43 +77,26 @@ def validate_sku(text: str) -> SKUResult:
         confidence=0.0,
         status="manual_review",
         source="ocr_failed",
-        raw_text=text
+        raw_text=text,
     )
 
 
 def detect_sku(image_path: Path) -> SKUResult:
 
-    app_logger.info(
-        f"Scanning SKU image: {image_path.name}"
-    )
+    app_logger.info(f"Scanning SKU image: {image_path.name}")
 
     try:
-        results = get_reader().readtext(
-            str(image_path)
-        )
+        results = get_reader().readtext(str(image_path))
 
-        extracted = " ".join(
-            [
-                item[1]
-                for item in results
-            ]
-        )
+        extracted = " ".join([item[1] for item in results])
 
-        app_logger.info(
-            f"OCR text: {extracted}"
-        )
+        app_logger.info(f"OCR text: {extracted}")
 
         return validate_sku(extracted)
 
     except Exception as e:
-        app_logger.error(
-            f"OCR failed: {e}"
-        )
+        app_logger.error(f"OCR failed: {e}")
 
         return SKUResult(
-            sku="00000",
-            confidence=0,
-            status="error",
-            source="exception",
-            raw_text=""
+            sku="00000", confidence=0, status="error", source="exception", raw_text=""
         )

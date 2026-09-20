@@ -9,13 +9,12 @@ from io import BytesIO
 from pathlib import Path
 from typing import Any
 
-from anthropic import Anthropic, DefaultHttpxClient
 import httpx
+from anthropic import Anthropic, DefaultHttpxClient
 from PIL import Image, ImageOps
 
 from backend.app.core.config import settings
 from backend.app.services.listing.policy import ListingPolicy
-
 
 MAX_IMAGE_DIMENSION = 1024
 MAX_IMAGES_PER_REQUEST = 20
@@ -108,7 +107,9 @@ def _text_list(value: Any) -> list[str]:
     return [str(item) for item in value] if isinstance(value, list) else []
 
 
-def analysis_from_response(data: dict[str, Any], source_images: list[Path]) -> VisionListingAnalysis:
+def analysis_from_response(
+    data: dict[str, Any], source_images: list[Path]
+) -> VisionListingAnalysis:
     """Convert Claude's JSON into a stable internal review object."""
     finding = ConditionFinding(
         has_tags=bool(data.get("has_tags", False)),
@@ -125,9 +126,14 @@ def analysis_from_response(data: dict[str, Any], source_images: list[Path]) -> V
     )
     review_notes = _text_list(data.get("review_notes"))
     if finding.is_used and not has_clear_wear:
-        review_notes.insert(0, "Unsupported used-condition recommendation ignored; verify condition during review.")
+        review_notes.insert(
+            0,
+            "Unsupported used-condition recommendation ignored; verify condition during review.",
+        )
     if finding.has_defects or has_clear_wear:
-        review_notes.insert(0, "Condition requires human confirmation before publication.")
+        review_notes.insert(
+            0, "Condition requires human confirmation before publication."
+        )
 
     def string_or_none(key: str) -> str | None:
         value = data.get(key)
@@ -155,28 +161,45 @@ def merge_analyses(analyses: list[VisionListingAnalysis]) -> VisionListingAnalys
         raise ValueError("At least one analysis is required")
 
     def first_value(field: str) -> str | None:
-        return next((value for analysis in analyses if (value := getattr(analysis, field))), None)
+        return next(
+            (value for analysis in analyses if (value := getattr(analysis, field))),
+            None,
+        )
 
     def unique(field: str) -> list[str]:
-        return list(dict.fromkeys(value for analysis in analyses for value in getattr(analysis, field)))
+        return list(
+            dict.fromkeys(
+                value for analysis in analyses for value in getattr(analysis, field)
+            )
+        )
 
     conditions = {analysis.condition for analysis in analyses}
 
     def has_retail_tag_evidence(analysis: VisionListingAnalysis) -> bool:
         evidence = " ".join(analysis.condition_evidence).lower()
-        return "hang tag" in evidence or "retail tag" in evidence or "price tag" in evidence
+        return (
+            "hang tag" in evidence
+            or "retail tag" in evidence
+            or "price tag" in evidence
+        )
 
     if "Used" in conditions:
         condition = "Used"
     elif "New with imperfections" in conditions:
         condition = "New with imperfections"
-    elif any(analysis.condition == "New with tags" and has_retail_tag_evidence(analysis) for analysis in analyses):
+    elif any(
+        analysis.condition == "New with tags" and has_retail_tag_evidence(analysis)
+        for analysis in analyses
+    ):
         condition = "New with tags"
     else:
         condition = "New without tags"
 
     notes = unique("review_notes")
-    notes.insert(0, "Combined from individual photo analyses; confirm all details before creating an eBay draft.")
+    notes.insert(
+        0,
+        "Combined from individual photo analyses; confirm all details before creating an eBay draft.",
+    )
     return VisionListingAnalysis(
         item_type=first_value("item_type"),
         brand=first_value("brand"),
@@ -213,10 +236,16 @@ class ClaudeVisionAnalyzer:
         if not image_paths:
             raise ValueError("At least one image is required for vision analysis")
         if len(image_paths) > MAX_IMAGES_PER_REQUEST:
-            raise ValueError(f"A maximum of {MAX_IMAGES_PER_REQUEST} images may be analyzed at once")
+            raise ValueError(
+                f"A maximum of {MAX_IMAGES_PER_REQUEST} images may be analyzed at once"
+            )
 
         content: list[dict[str, Any]] = [
-            {"type": "text", "text": "Analyze these product photos. Image filenames in order: " + ", ".join(path.name for path in image_paths)}
+            {
+                "type": "text",
+                "text": "Analyze these product photos. Image filenames in order: "
+                + ", ".join(path.name for path in image_paths),
+            }
         ]
         content.extend(encode_image(path) for path in image_paths)
         response = self.client.messages.create(

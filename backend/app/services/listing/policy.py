@@ -29,7 +29,9 @@ class ListingPolicy:
     MARKETPLACE_SUBMISSION = "draft_only"
 
     @staticmethod
-    def recommended_condition(*, has_tags: bool, has_defects: bool, is_used: bool = False) -> str:
+    def recommended_condition(
+        *, has_tags: bool, has_defects: bool, is_used: bool = False
+    ) -> str:
         """Choose a conservative condition recommendation from photo findings.
 
         A visible defect overrides a tag because the item needs review before
@@ -45,7 +47,9 @@ class ListingPolicy:
         return ListingPolicy.DEFAULT_CONDITION
 
     @staticmethod
-    def shipping_and_returns(*, weight_oz: float, is_tie: bool = False) -> ShippingAndReturns:
+    def shipping_and_returns(
+        *, weight_oz: float, is_tie: bool = False
+    ) -> ShippingAndReturns:
         """Apply flat-rate USPS Ground and return policy to an item's weight."""
         if weight_oz <= 0:
             raise ValueError("weight_oz must be greater than zero")

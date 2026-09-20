@@ -62,7 +62,10 @@ def ask_vision(
     """Send images plus a prompt to Claude and return the text reply."""
     model = model or os.getenv("ANTHROPIC_MODEL", DEFAULT_MODEL)
 
-    content = [image_to_content_block(p, max_size=max_size, quality=quality) for p in image_paths]
+    content = [
+        image_to_content_block(p, max_size=max_size, quality=quality)
+        for p in image_paths
+    ]
     content.append({"type": "text", "text": prompt})
 
     app_logger.info(f"Sending {len(image_paths)} image(s) to {model}")
@@ -78,7 +81,9 @@ def ask_vision(
             return response.content[0].text
         except Exception as e:
             if attempt < max_retries - 1:
-                print(f"  ⚠️ Network hiccup ({type(e).__name__}). Retrying in 3 seconds...")
+                print(
+                    f"  ⚠️ Network hiccup ({type(e).__name__}). Retrying in 3 seconds..."
+                )
                 time.sleep(3)
             else:
                 app_logger.error("Max retries reached. Connection failed.")

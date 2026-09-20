@@ -2,9 +2,8 @@ import json
 import re
 from pathlib import Path
 
-from backend.app.services.ai.vision_client import ask_vision
 from backend.app.core.logging import app_logger
-
+from backend.app.services.ai.vision_client import ask_vision
 
 CONDITION_PROMPT = """You are an expert e-commerce condition grader for resale clothing.
 IMPORTANT CONTEXT: these garments come from retail store displays / overstock. They must be assumed NEW unless there is clear evidence otherwise.

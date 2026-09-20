@@ -1,16 +1,15 @@
+import base64
 import io
 import json
 import re
-import base64
 import time
 from pathlib import Path
 
-from PIL import Image
 from anthropic import APIConnectionError, APITimeoutError
+from PIL import Image
 
-from backend.app.services.ai.vision_client import get_client, DEFAULT_MODEL
 from backend.app.core.logging import app_logger
-
+from backend.app.services.ai.vision_client import DEFAULT_MODEL, get_client
 
 GROUPING_PROMPT = """You are an expert e-commerce photography assistant.
 I am providing you with a batch of raw product photos. They may contain MULTIPLE different physical products.
@@ -88,7 +87,9 @@ def group_loose_images(image_paths: list[Path]) -> list[list[Path]]:
             break
         except (APIConnectionError, APITimeoutError) as e:
             if attempt < max_retries - 1:
-                app_logger.warning(f"Grouping connection dropped on attempt {attempt + 1}. Retrying in 3 seconds...")
+                app_logger.warning(
+                    f"Grouping connection dropped on attempt {attempt + 1}. Retrying in 3 seconds..."
+                )
                 time.sleep(3)
             else:
                 app_logger.error("Max retries reached for grouping. Connection failed.")

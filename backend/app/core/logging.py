@@ -2,7 +2,6 @@ from loguru import logger
 
 from backend.app.core.paths import LOGS
 
-
 LOGS.mkdir(exist_ok=True)
 
 

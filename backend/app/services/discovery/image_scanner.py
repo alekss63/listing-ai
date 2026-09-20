@@ -1,11 +1,10 @@
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 from PIL import Image
 
-from backend.app.core.paths import PICTURES
 from backend.app.core.logging import app_logger
-
+from backend.app.core.paths import PICTURES
 
 SUPPORTED_EXTENSIONS = {
     ".jpg",
@@ -82,9 +81,7 @@ def scan_images() -> list[ImageFile]:
     Recursively scan the Pictures folder for supported image files.
     """
     if not PICTURES.exists():
-        app_logger.error(
-            f"Pictures folder missing: {PICTURES}"
-        )
+        app_logger.error(f"Pictures folder missing: {PICTURES}")
         return []
 
     images: list[ImageFile] = []
@@ -110,9 +107,7 @@ def scan_images() -> list[ImageFile]:
             )
 
         except Exception as exc:
-            app_logger.warning(
-                f"Cannot read image {file}: {exc}"
-            )
+            app_logger.warning(f"Cannot read image {file}: {exc}")
 
     images.sort(key=lambda image: image.created)
 

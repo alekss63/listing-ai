@@ -2,13 +2,14 @@ import json
 import shutil
 from pathlib import Path
 
-from backend.app.services.discovery.models import ProductManifest
 from backend.app.core.logging import app_logger
+from backend.app.services.discovery.models import ProductManifest
 
 try:
-    from backend.app.core.paths import STORAGE_PRODUCTS, PROCESSED
+    from backend.app.core.paths import PROCESSED, STORAGE_PRODUCTS
 except ImportError:
     from backend.app.core.paths import BASE_DIR
+
     STORAGE_PRODUCTS = BASE_DIR / "storage" / "products"
     PROCESSED = BASE_DIR / "Processed"
 
@@ -38,7 +39,6 @@ def save_manifest(manifest: ProductManifest) -> Path:
     manifest_dict = {
         "sku": manifest.sku,
         "status": manifest.status,
-
         # Sprint 3 & 7: OCR Data
         "garment_type": manifest.garment_type,
         "brand": manifest.brand,
@@ -48,7 +48,6 @@ def save_manifest(manifest: ProductManifest) -> Path:
         "department": manifest.department,
         "condition": manifest.condition,
         "condition_notes": manifest.condition_notes,
-
         # Sprint 4: Measurements
         "measurements": {
             "pit_to_pit": manifest.measurements.pit_to_pit,
@@ -57,24 +56,29 @@ def save_manifest(manifest: ProductManifest) -> Path:
             "waist": manifest.measurements.waist,
             "inseam": manifest.measurements.inseam,
         },
-
         # Sprint 5: Listing Data
         "title": manifest.title,
         "description": manifest.description,
         "category": manifest.category,
         "item_specifics": manifest.item_specifics,
-
         # Photo mapping (stored as filenames)
         "photos": {
-            "sku_photo": manifest.photos.sku_photo.name if manifest.photos.sku_photo else None,
+            "sku_photo": (
+                manifest.photos.sku_photo.name if manifest.photos.sku_photo else None
+            ),
             "tag_photos": [p.name for p in manifest.photos.tag_photos],
             "measurement_photos": [p.name for p in manifest.photos.measurement_photos],
             "defect_photos": [p.name for p in manifest.photos.defect_photos],
-            "front_photo": manifest.photos.front_photo.name if manifest.photos.front_photo else None,
-            "back_photo": manifest.photos.back_photo.name if manifest.photos.back_photo else None,
+            "front_photo": (
+                manifest.photos.front_photo.name
+                if manifest.photos.front_photo
+                else None
+            ),
+            "back_photo": (
+                manifest.photos.back_photo.name if manifest.photos.back_photo else None
+            ),
             "detail_photos": [p.name for p in manifest.photos.detail_photos],
         },
-
         "raw_images": [p.name for p in manifest.raw_images],
         "created_draft": manifest.created_draft,
         "uploaded_to_ebay": manifest.uploaded_to_ebay,

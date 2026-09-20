@@ -8,11 +8,13 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from backend.app.core.paths import PICTURES
 from backend.app.services.discovery.image_scanner import scan_images
-from backend.app.services.discovery.product_grouper import group_by_product
-from backend.app.services.discovery.smart_grouper import group_loose_images
 from backend.app.services.discovery.manifest_builder import build_manifest
+from backend.app.services.discovery.product_grouper import (
+    ProductBatch,
+    group_by_product,
+)
+from backend.app.services.discovery.smart_grouper import group_loose_images
 from backend.app.services.discovery.storage import save_manifest
-from backend.app.services.discovery.product_grouper import ProductBatch
 
 SUPPORTED = {".jpg", ".jpeg", ".png"}
 
@@ -55,10 +57,14 @@ def main() -> int:
 
     # 4. Process and Save
     for i, batch in enumerate(batches):
-        print(f"\n[{i+1}/{len(batches)}] Processing SKU: {batch.sku} ({len(batch.images)} images)...")
+        print(
+            f"\n[{i+1}/{len(batches)}] Processing SKU: {batch.sku} ({len(batch.images)} images)..."
+        )
 
         if len(batch.images) > 8:
-            print(f"  ⚠️  Warning: {len(batch.images)} images. Large payloads might trigger macOS SSL dropouts.")
+            print(
+                f"  ⚠️  Warning: {len(batch.images)} images. Large payloads might trigger macOS SSL dropouts."
+            )
 
         try:
             manifest = build_manifest(batch)
@@ -76,7 +82,9 @@ def main() -> int:
             time.sleep(1)
 
     print("\n" + "=" * 50)
-    print(f"Pipeline finished! Processed {success_count} products. Failed: {fail_count}.")
+    print(
+        f"Pipeline finished! Processed {success_count} products. Failed: {fail_count}."
+    )
     print("Check 'storage/products/' for manifests and 'Processed/' for your archive!")
     return 0
 

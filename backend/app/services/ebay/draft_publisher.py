@@ -4,9 +4,8 @@ from urllib.parse import quote
 
 import httpx
 
-from backend.app.services.ebay.client import get_headers, EBAY_DOMAIN
 from backend.app.core.logging import app_logger
-
+from backend.app.services.ebay.client import EBAY_DOMAIN, get_headers
 
 # eBay Condition Enum mapping
 CONDITION_MAP = {
@@ -98,11 +97,7 @@ def create_inventory_item(sku: str, manifest: dict) -> bool:
             "conditionDescription": manifest.get("condition_notes", ""),
         },
         "condition": condition_enum,
-        "availability": {
-            "shipToLocationAvailability": {
-                "quantity": 1
-            }
-        },
+        "availability": {"shipToLocationAvailability": {"quantity": 1}},
     }
 
     try:
@@ -118,7 +113,9 @@ def create_inventory_item(sku: str, manifest: dict) -> bool:
         return False
 
 
-def create_offer(sku: str, manifest: dict, policies: dict, location_key: str) -> str | None:
+def create_offer(
+    sku: str, manifest: dict, policies: dict, location_key: str
+) -> str | None:
     """Step 2: Create the Offer (The Draft)."""
     url = f"{EBAY_DOMAIN}/sell/inventory/v1/offer"
     headers = get_headers()
@@ -160,7 +157,7 @@ def create_offer(sku: str, manifest: dict, policies: dict, location_key: str) ->
 
 def publish_to_ebay(manifest_path: Path):
     """Main entry point to push a manifest to eBay."""
-    with open(manifest_path, "r", encoding="utf-8") as f:
+    with open(manifest_path, encoding="utf-8") as f:
         manifest = json.load(f)
 
     sku = manifest.get("sku")

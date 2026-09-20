@@ -4,12 +4,23 @@ from backend.app.services.listing.policy import ListingPolicy
 
 
 def test_condition_defaults_to_new_without_tags():
-    assert ListingPolicy.recommended_condition(has_tags=False, has_defects=False) == "New without tags"
+    assert (
+        ListingPolicy.recommended_condition(has_tags=False, has_defects=False)
+        == "New without tags"
+    )
 
 
 def test_condition_flags_defects_and_rare_used_items():
-    assert ListingPolicy.recommended_condition(has_tags=True, has_defects=True) == "New with imperfections"
-    assert ListingPolicy.recommended_condition(has_tags=False, has_defects=False, is_used=True) == "Used"
+    assert (
+        ListingPolicy.recommended_condition(has_tags=True, has_defects=True)
+        == "New with imperfections"
+    )
+    assert (
+        ListingPolicy.recommended_condition(
+            has_tags=False, has_defects=False, is_used=True
+        )
+        == "Used"
+    )
 
 
 def test_ties_and_light_items_use_lowest_shipping_tier():

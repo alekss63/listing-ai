@@ -2,11 +2,16 @@ from pathlib import Path
 
 import pytest
 
-from backend.app.services.listing.vision import VisionListingAnalysis, analysis_from_response, merge_analyses, parse_model_json
+from backend.app.services.listing.vision import (
+    VisionListingAnalysis,
+    analysis_from_response,
+    merge_analyses,
+    parse_model_json,
+)
 
 
 def test_model_json_can_be_wrapped_in_a_code_fence():
-    assert parse_model_json("```json\n{\"brand\": \"Oakley\"}\n```") == {"brand": "Oakley"}
+    assert parse_model_json('```json\n{"brand": "Oakley"}\n```') == {"brand": "Oakley"}
 
 
 def test_invalid_model_json_is_rejected():
@@ -36,7 +41,10 @@ def test_analysis_applies_defect_condition_and_review_requirement():
     )
 
     assert analysis.condition == "New with imperfections"
-    assert analysis.review_notes[0] == "Condition requires human confirmation before publication."
+    assert (
+        analysis.review_notes[0]
+        == "Condition requires human confirmation before publication."
+    )
     assert analysis.source_images == ["IMG_1.jpg"]
 
 
@@ -57,8 +65,34 @@ def test_used_condition_requires_explicit_wear_evidence():
 
 
 def test_individual_analyses_merge_to_the_more_conservative_condition():
-    first = VisionListingAnalysis("Polo", "Nike", "Black", None, None, "New without tags", [], [], ["Nike"], "Polos", [], ["front.jpg"])
-    second = VisionListingAnalysis("Polo", None, None, "L", None, "New with imperfections", ["back.jpg: spot"], ["Spot"], ["L"], None, ["Confirm spot"], ["back.jpg"])
+    first = VisionListingAnalysis(
+        "Polo",
+        "Nike",
+        "Black",
+        None,
+        None,
+        "New without tags",
+        [],
+        [],
+        ["Nike"],
+        "Polos",
+        [],
+        ["front.jpg"],
+    )
+    second = VisionListingAnalysis(
+        "Polo",
+        None,
+        None,
+        "L",
+        None,
+        "New with imperfections",
+        ["back.jpg: spot"],
+        ["Spot"],
+        ["L"],
+        None,
+        ["Confirm spot"],
+        ["back.jpg"],
+    )
 
     merged = merge_analyses([first, second])
 
@@ -68,8 +102,34 @@ def test_individual_analyses_merge_to_the_more_conservative_condition():
 
 
 def test_sewn_in_label_does_not_qualify_as_new_with_tags():
-    label = VisionListingAnalysis("Polo", "Nike", None, None, None, "New with tags", [], [], [], None, [], ["label.jpg"])
-    hang_tag = VisionListingAnalysis("Polo", "Nike", None, None, None, "New with tags", ["tag.jpg: original retail hang tag attached"], [], [], None, [], ["tag.jpg"])
+    label = VisionListingAnalysis(
+        "Polo",
+        "Nike",
+        None,
+        None,
+        None,
+        "New with tags",
+        [],
+        [],
+        [],
+        None,
+        [],
+        ["label.jpg"],
+    )
+    hang_tag = VisionListingAnalysis(
+        "Polo",
+        "Nike",
+        None,
+        None,
+        None,
+        "New with tags",
+        ["tag.jpg: original retail hang tag attached"],
+        [],
+        [],
+        None,
+        [],
+        ["tag.jpg"],
+    )
 
     assert merge_analyses([label]).condition == "New without tags"
     assert merge_analyses([hang_tag]).condition == "New with tags"

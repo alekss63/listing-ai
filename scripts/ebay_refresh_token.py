@@ -33,7 +33,9 @@ def update_env(key: str, value: str):
 def main():
     if not (APP_ID and CERT_ID and REFRESH_TOKEN):
         print("❌ .env needs EBAY_APP_ID, EBAY_CERT_ID and EBAY_REFRESH_TOKEN.")
-        print("   If you never saved the refresh token, run `python scripts/ebay_oauth.py`")
+        print(
+            "   If you never saved the refresh token, run `python scripts/ebay_oauth.py`"
+        )
         print("   again and save BOTH tokens it prints (user token AND refresh token).")
         return
 

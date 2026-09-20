@@ -2,9 +2,8 @@ import json
 import re
 from pathlib import Path
 
-from backend.app.services.ai.vision_client import ask_vision
 from backend.app.core.logging import app_logger
-
+from backend.app.services.ai.vision_client import ask_vision
 
 TAG_EXTRACTION_PROMPT = """You are an expert e-commerce data entry specialist.
 I am providing you with photo(s) of a clothing tag, label, or the garment itself.
@@ -42,5 +41,7 @@ def extract_tag_data(tag_photos: list[Path]) -> dict:
     try:
         return json.loads(clean_text)
     except json.JSONDecodeError as e:
-        app_logger.error(f"Failed to parse OCR JSON response: {e}\nRaw text: {response_text}")
+        app_logger.error(
+            f"Failed to parse OCR JSON response: {e}\nRaw text: {response_text}"
+        )
         return {}

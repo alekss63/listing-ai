@@ -6,25 +6,30 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from backend.app.core.paths import PICTURES
-from backend.app.services.discovery.product_grouper import ProductBatch
 from backend.app.services.discovery.manifest_builder import build_manifest
+from backend.app.services.discovery.product_grouper import ProductBatch
 
 TEST_SKU = "TestClassification"
 
+
 def main() -> int:
     test_dir = PICTURES / TEST_SKU
-    
+
     if not test_dir.exists() or not any(test_dir.iterdir()):
         print(f"ERROR: Please place photos into {test_dir}")
         return 1
 
-    image_paths = [f for f in test_dir.iterdir() if f.is_file() and f.suffix.lower() in {".jpg", ".jpeg", ".png"}]
-    
+    image_paths = [
+        f
+        for f in test_dir.iterdir()
+        if f.is_file() and f.suffix.lower() in {".jpg", ".jpeg", ".png"}
+    ]
+
     print(f"Running full pipeline (Classification + OCR) for {TEST_SKU}...")
-    
+
     batch = ProductBatch(sku=TEST_SKU, images=image_paths)
     manifest = build_manifest(batch)
-    
+
     print("\n--- Extracted Tag Data (Sprint 3) ---")
     print(f"Brand:      {manifest.brand}")
     print(f"Size:       {manifest.size}")
@@ -32,8 +37,9 @@ def main() -> int:
     print(f"Material:   {manifest.material}")
     print(f"Department: {manifest.department}")
     print("-------------------------------------")
-    
+
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -7,12 +7,14 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from backend.app.services.ebay.client import test_connection
 
+
 def main():
     print("Testing eBay Sandbox Connection...")
     if test_connection():
         print("✅ SUCCESS: Connected to eBay Sandbox!")
     else:
         print("❌ FAILED: Check your EBAY_USER_TOKEN in .env")
+
 
 if __name__ == "__main__":
     main()

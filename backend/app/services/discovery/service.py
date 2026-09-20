@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from backend.app.core.logging import app_logger
@@ -12,7 +12,10 @@ from backend.app.core.paths import PRODUCTS, ROOT
 from backend.app.services.discovery.image_scanner import ImageFile, scan_images
 from backend.app.services.discovery.manifest_builder import build_manifest
 from backend.app.services.discovery.models import ProductManifest
-from backend.app.services.discovery.product_grouper import ProductBatch, group_by_product
+from backend.app.services.discovery.product_grouper import (
+    ProductBatch,
+    group_by_product,
+)
 from backend.app.services.discovery.sku_detector import SKUResult, detect_sku
 
 
@@ -35,7 +38,7 @@ def save_manifest(manifest: ProductManifest, sequence: int) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "schema_version": 1,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         **manifest.to_dict(project_root=ROOT),
     }
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")

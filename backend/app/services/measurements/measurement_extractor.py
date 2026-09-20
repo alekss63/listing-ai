@@ -2,9 +2,8 @@ import json
 import re
 from pathlib import Path
 
-from backend.app.services.ai.vision_client import ask_vision
 from backend.app.core.logging import app_logger
-
+from backend.app.services.ai.vision_client import ask_vision
 
 MEASUREMENT_EXTRACTION_PROMPT = """You are an expert e-commerce apparel specialist.
 I am providing you with HIGH RESOLUTION photo(s) of a measuring tape placed on a garment.
@@ -45,7 +44,9 @@ def extract_measurements(
         size=size or "unknown",
     )
 
-    app_logger.info(f"Extracting measurements from {len(measurement_photos)} photo(s)...")
+    app_logger.info(
+        f"Extracting measurements from {len(measurement_photos)} photo(s)..."
+    )
 
     # HIGH RESOLUTION: tape numbers need detail (only 1-2 photos, so payload is safe)
     response_text = ask_vision(
@@ -61,14 +62,18 @@ def extract_measurements(
     try:
         extracted = json.loads(clean_text)
     except json.JSONDecodeError as e:
-        app_logger.error(f"Failed to parse Measurement JSON response: {e}\nRaw text: {response_text}")
+        app_logger.error(
+            f"Failed to parse Measurement JSON response: {e}\nRaw text: {response_text}"
+        )
         return {}
 
     # Warn on suspicious values so the user double-checks in the dashboard
     try:
         p2p = extracted.get("pit_to_pit")
         if p2p is not None and float(p2p) < 15:
-            app_logger.warning(f"Suspicious pit_to_pit={p2p}in — please double-check in the dashboard.")
+            app_logger.warning(
+                f"Suspicious pit_to_pit={p2p}in — please double-check in the dashboard."
+            )
     except (TypeError, ValueError):
         pass
 

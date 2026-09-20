@@ -1,17 +1,17 @@
 from pathlib import Path
 
-from backend.app.services.discovery.models import (
-    ProductManifest,
-    Measurements,
-    PhotoSet,
-)
-from backend.app.services.discovery.product_grouper import ProductBatch
-from backend.app.services.ai.photo_classifier import classify_photos
-from backend.app.services.ocr.tag_extractor import extract_tag_data
-from backend.app.services.measurements.measurement_extractor import extract_measurements
+from backend.app.core.logging import app_logger
 from backend.app.services.ai.condition_assessor import assess_condition
 from backend.app.services.ai.listing_generator import generate_listing
-from backend.app.core.logging import app_logger
+from backend.app.services.ai.photo_classifier import classify_photos
+from backend.app.services.discovery.models import (
+    Measurements,
+    PhotoSet,
+    ProductManifest,
+)
+from backend.app.services.discovery.product_grouper import ProductBatch
+from backend.app.services.measurements.measurement_extractor import extract_measurements
+from backend.app.services.ocr.tag_extractor import extract_tag_data
 
 
 def _resolve_path(image_paths: list[Path], filename: str | None) -> Path | None:
@@ -38,11 +38,17 @@ def build_manifest(product: ProductBatch) -> ProductManifest:
     photos = PhotoSet(
         sku_photo=_resolve_path(product.images, classification.get("sku_photo")),
         tag_photos=_resolve_paths(product.images, classification.get("tag_photos")),
-        measurement_photos=_resolve_paths(product.images, classification.get("measurement_photos")),
-        defect_photos=_resolve_paths(product.images, classification.get("defect_photos")),
+        measurement_photos=_resolve_paths(
+            product.images, classification.get("measurement_photos")
+        ),
+        defect_photos=_resolve_paths(
+            product.images, classification.get("defect_photos")
+        ),
         front_photo=_resolve_path(product.images, classification.get("front_photo")),
         back_photo=_resolve_path(product.images, classification.get("back_photo")),
-        detail_photos=_resolve_paths(product.images, classification.get("detail_photos")),
+        detail_photos=_resolve_paths(
+            product.images, classification.get("detail_photos")
+        ),
     )
 
     # 3. Extract tag data using OCR
@@ -56,7 +62,7 @@ def build_manifest(product: ProductBatch) -> ProductManifest:
     if ocr_photos:
         tag_data = extract_tag_data(ocr_photos)
 
-    # 4. Extract measurements
+        # 4. Extract measurements
         measurement_data = {}
     if photos.measurement_photos:
         measurement_data = extract_measurements(

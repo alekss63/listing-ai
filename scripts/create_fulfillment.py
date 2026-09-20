@@ -68,11 +68,15 @@ def main():
         print(f"\n🚚 Trying variant {label}...")
         res = httpx.post(url, headers=get_headers(), json=payload, timeout=15.0)
         if res.status_code in (200, 201):
-            print(f"✅ SUCCESS! Fulfillment Policy ID: {res.json().get('fulfillmentPolicyId')}")
+            print(
+                f"✅ SUCCESS! Fulfillment Policy ID: {res.json().get('fulfillmentPolicyId')}"
+            )
             return
         print(f"   ❌ {res.status_code}: {res.text[:300]}")
 
-    print("\nBoth variants failed — paste this output and we switch to the API Explorer.")
+    print(
+        "\nBoth variants failed — paste this output and we switch to the API Explorer."
+    )
 
 
 if __name__ == "__main__":

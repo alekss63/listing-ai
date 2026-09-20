@@ -1,6 +1,7 @@
-import sys
 import os
+import sys
 from pathlib import Path
+
 import httpx
 from dotenv import load_dotenv
 
@@ -12,6 +13,7 @@ load_dotenv(PROJECT_ROOT / ".env")
 
 EBAY_DOMAIN = os.getenv("EBAY_DOMAIN", "https://api.sandbox.ebay.com")
 USER_TOKEN = os.getenv("EBAY_USER_TOKEN")
+
 
 def main():
     print("🔍 eBay API Diagnostic Check")
@@ -44,6 +46,7 @@ def main():
         print(f"Response Body:\n{response.text}")
     except Exception as e:
         print(f"Network Error: {e}")
+
 
 if __name__ == "__main__":
     main()

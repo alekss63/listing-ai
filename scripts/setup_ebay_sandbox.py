@@ -26,11 +26,15 @@ def get_headers():
 
 def ensure_location():
     print("📦 Checking Inventory Locations...")
-    res = httpx.get(f"{EBAY_DOMAIN}/sell/inventory/v1/location", headers=get_headers(), timeout=15.0)
+    res = httpx.get(
+        f"{EBAY_DOMAIN}/sell/inventory/v1/location", headers=get_headers(), timeout=15.0
+    )
     if res.status_code == 200:
         locations = res.json().get("merchantLocations", [])
         if locations:
-            print(f"✅ Location already exists: {locations[0].get('merchantLocationKey')}")
+            print(
+                f"✅ Location already exists: {locations[0].get('merchantLocationKey')}"
+            )
             return
 
     print("   Creating location DEFAULT...")
@@ -52,13 +56,26 @@ def ensure_location():
         "name": "ListingAI Default Warehouse",
         "phone": "408-555-0100",
     }
-    res = httpx.put(f"{EBAY_DOMAIN}/sell/inventory/v1/location/DEFAULT", headers=get_headers(), json=payload, timeout=15.0)
-    print("✅ Location created!" if res.status_code in (200, 201, 204) else f"❌ Location Error: {res.text}")
+    res = httpx.put(
+        f"{EBAY_DOMAIN}/sell/inventory/v1/location/DEFAULT",
+        headers=get_headers(),
+        json=payload,
+        timeout=15.0,
+    )
+    print(
+        "✅ Location created!"
+        if res.status_code in (200, 201, 204)
+        else f"❌ Location Error: {res.text}"
+    )
 
 
 def ensure_fulfillment_policy():
     print("🚚 Checking Fulfillment Policies...")
-    res = httpx.get(f"{EBAY_DOMAIN}/sell/account/v1/fulfillment_policy?marketplace_id=EBAY_US", headers=get_headers(), timeout=15.0)
+    res = httpx.get(
+        f"{EBAY_DOMAIN}/sell/account/v1/fulfillment_policy?marketplace_id=EBAY_US",
+        headers=get_headers(),
+        timeout=15.0,
+    )
     if res.status_code == 200 and res.json().get("fulfillmentPolicies"):
         pol = res.json()["fulfillmentPolicies"][0]
         print(f"✅ Fulfillment Policy already exists: {pol['fulfillmentPolicyId']}")
@@ -91,8 +108,17 @@ def ensure_fulfillment_policy():
             "regionIncluded": [{"regionName": "US", "regionType": "COUNTRY"}]
         },
     }
-    res = httpx.post(f"{EBAY_DOMAIN}/sell/account/v1/fulfillment_policy", headers=get_headers(), json=payload, timeout=15.0)
-    print("✅ Fulfillment Policy created!" if res.status_code in (200, 201) else f"❌ Fulfillment Error: {res.text}")
+    res = httpx.post(
+        f"{EBAY_DOMAIN}/sell/account/v1/fulfillment_policy",
+        headers=get_headers(),
+        json=payload,
+        timeout=15.0,
+    )
+    print(
+        "✅ Fulfillment Policy created!"
+        if res.status_code in (200, 201)
+        else f"❌ Fulfillment Error: {res.text}"
+    )
 
 
 def main():

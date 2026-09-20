@@ -3,9 +3,8 @@ import re
 import time
 from pathlib import Path
 
-from backend.app.services.ai.vision_client import ask_vision
 from backend.app.core.logging import app_logger
-
+from backend.app.services.ai.vision_client import ask_vision
 
 CLASSIFICATION_PROMPT = """You are an expert e-commerce product photographer and listing specialist. 
 I am going to provide you with a batch of raw photos for a single product. 
@@ -41,7 +40,7 @@ def _merge_classifications(results: list[dict]) -> dict:
         "back_photo": None,
         "detail_photos": [],
     }
-    
+
     for res in results:
         # Keep the first non-null single photo we find
         if merged["sku_photo"] is None:
@@ -50,12 +49,17 @@ def _merge_classifications(results: list[dict]) -> dict:
             merged["front_photo"] = res.get("front_photo")
         if merged["back_photo"] is None:
             merged["back_photo"] = res.get("back_photo")
-            
+
         # Combine all list-based photos
-        for key in ["tag_photos", "measurement_photos", "defect_photos", "detail_photos"]:
+        for key in [
+            "tag_photos",
+            "measurement_photos",
+            "defect_photos",
+            "detail_photos",
+        ]:
             if key in res and isinstance(res[key], list):
                 merged[key].extend(res[key])
-                
+
     return merged
 
 
@@ -68,32 +72,34 @@ def classify_photos(image_paths: list[Path]) -> dict:
 
     # Chunk into batches of 2
     chunk_size = 2
-    chunks = [image_paths[i:i + chunk_size] for i in range(0, len(image_paths), chunk_size)]
-    
+    chunks = [
+        image_paths[i : i + chunk_size] for i in range(0, len(image_paths), chunk_size)
+    ]
+
     all_results = []
-    
+
     for i, chunk in enumerate(chunks):
         filenames = [p.name for p in chunk]
         prompt = CLASSIFICATION_PROMPT.format(filenames=", ".join(filenames))
-        
-        app_logger.info(f"Classifying chunk {i+1}/{len(chunks)} ({len(chunk)} photos)...")
-        
-        response_text = ask_vision(
-            prompt=prompt,
-            image_paths=chunk,
-            max_tokens=1000
+
+        app_logger.info(
+            f"Classifying chunk {i+1}/{len(chunks)} ({len(chunk)} photos)..."
         )
+
+        response_text = ask_vision(prompt=prompt, image_paths=chunk, max_tokens=1000)
 
         clean_text = re.sub(r"```json|```", "", response_text).strip()
 
         try:
             all_results.append(json.loads(clean_text))
         except json.JSONDecodeError as e:
-            app_logger.error(f"Failed to parse chunk {i+1} JSON: {e}\nRaw text: {response_text}")
+            app_logger.error(
+                f"Failed to parse chunk {i+1} JSON: {e}\nRaw text: {response_text}"
+            )
             all_results.append({})
-            
+
         # Pause between chunks to respect API rate limits
         if i < len(chunks) - 1:
             time.sleep(1)
-            
+
     return _merge_classifications(all_results)

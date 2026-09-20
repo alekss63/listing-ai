@@ -9,14 +9,17 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from backend.app.core.paths import DRAFTS, ROOT, TEMP
 from backend.app.services.listing.policy import ListingPolicy, ShippingAndReturns
-from backend.app.services.listing.vision import ClaudeVisionAnalyzer, VisionListingAnalysis, merge_analyses
-
+from backend.app.services.listing.vision import (
+    ClaudeVisionAnalyzer,
+    VisionListingAnalysis,
+    merge_analyses,
+)
 
 PRODUCT_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$")
 
@@ -55,7 +58,9 @@ def build_review_draft(
 ) -> ReviewDraft:
     """Build a local draft that is deliberately blocked pending human review."""
     if not PRODUCT_ID_PATTERN.fullmatch(product_id):
-        raise ValueError("product_id must use letters, numbers, hyphens, or underscores")
+        raise ValueError(
+            "product_id must use letters, numbers, hyphens, or underscores"
+        )
 
     if weight_oz is not None and shipping_cost is not None:
         raise ValueError("provide either weight_oz or shipping_cost, not both")
@@ -65,9 +70,13 @@ def build_review_draft(
     if shipping_cost is not None:
         shipping = ListingPolicy.shipping_and_returns_for_rate(shipping_cost)
     elif weight_oz is None:
-        notes.append("Enter the packaged shipping weight before creating an eBay draft.")
+        notes.append(
+            "Enter the packaged shipping weight before creating an eBay draft."
+        )
     else:
-        shipping = ListingPolicy.shipping_and_returns(weight_oz=weight_oz, is_tie=is_tie)
+        shipping = ListingPolicy.shipping_and_returns(
+            weight_oz=weight_oz, is_tie=is_tie
+        )
 
     return ReviewDraft(
         product_id=product_id,
@@ -89,7 +98,7 @@ def save_review_draft(draft: ReviewDraft, directory: Path = DRAFTS) -> Path:
     path = directory / f"{draft.product_id}.json"
     payload = {
         "schema_version": 1,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "project_root": str(ROOT),
         **draft.to_dict(),
     }
@@ -121,7 +130,9 @@ def analyze_and_save_review_draft(
 ) -> tuple[ReviewDraft, Path]:
     """Run Claude Vision, then save the resulting local review draft."""
     if not PRODUCT_ID_PATTERN.fullmatch(product_id):
-        raise ValueError("product_id must use letters, numbers, hyphens, or underscores")
+        raise ValueError(
+            "product_id must use letters, numbers, hyphens, or underscores"
+        )
 
     vision = analyzer or ClaudeVisionAnalyzer()
     analyses: list[VisionListingAnalysis] = []
