@@ -10,6 +10,7 @@ from backend.app.services.discovery.models import (
     ProductManifest,
 )
 from backend.app.services.discovery.product_grouper import ProductBatch
+from backend.app.services.discovery.sku_detector import UNKNOWN_SKU
 from backend.app.services.measurements.measurement_extractor import extract_measurements
 from backend.app.services.ocr.tag_extractor import extract_tag_data
 
@@ -62,8 +63,8 @@ def build_manifest(product: ProductBatch) -> ProductManifest:
     if ocr_photos:
         tag_data = extract_tag_data(ocr_photos)
 
-        # 4. Extract measurements
-        measurement_data = {}
+    # 4. Extract measurements
+    measurement_data = {}
     if photos.measurement_photos:
         measurement_data = extract_measurements(
             photos.measurement_photos,
@@ -93,6 +94,10 @@ def build_manifest(product: ProductBatch) -> ProductManifest:
     extracted_sku = tag_data.get("sku")
     if extracted_sku:
         final_sku = extracted_sku
+    elif product.sku and product.sku != UNKNOWN_SKU:
+        # The sticker read while grouping is more trustworthy than a
+        # descriptive SKU assembled from whatever the tag OCR returned.
+        final_sku = product.sku
     else:
         # Fallback: Use Brand-Color-Type if no SKU sticker is found
         brand = (tag_data.get("brand") or "Unknown").replace(" ", "")

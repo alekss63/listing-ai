@@ -8,6 +8,9 @@ from backend.app.core.logging import app_logger
 
 SKU_PATTERN = re.compile(r"\b0\d{4}\b")
 
+# Placeholder used whenever a sticker could not be read.
+UNKNOWN_SKU = "00000"
+
 
 _reader: easyocr.Reader | None = None
 
@@ -45,7 +48,7 @@ class SKUResult:
     @classmethod
     def from_dict(cls, data: dict) -> "SKUResult":
         return cls(
-            sku=data.get("sku", "00000"),
+            sku=data.get("sku", UNKNOWN_SKU),
             confidence=float(data.get("confidence", 0.0)),
             status=data.get("status", "manual_review"),
             source=data.get("source", "unknown"),
@@ -73,7 +76,7 @@ def validate_sku(text: str) -> SKUResult:
         )
 
     return SKUResult(
-        sku="00000",
+        sku=UNKNOWN_SKU,
         confidence=0.0,
         status="manual_review",
         source="ocr_failed",
@@ -98,5 +101,9 @@ def detect_sku(image_path: Path) -> SKUResult:
         app_logger.error(f"OCR failed: {e}")
 
         return SKUResult(
-            sku="00000", confidence=0, status="error", source="exception", raw_text=""
+            sku=UNKNOWN_SKU,
+            confidence=0,
+            status="error",
+            source="exception",
+            raw_text="",
         )

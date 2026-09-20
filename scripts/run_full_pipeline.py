@@ -11,7 +11,7 @@ from backend.app.services.discovery.image_scanner import scan_images
 from backend.app.services.discovery.manifest_builder import build_manifest
 from backend.app.services.discovery.product_grouper import (
     ProductBatch,
-    group_by_product,
+    group_by_folder,
 )
 from backend.app.services.discovery.smart_grouper import group_loose_images
 from backend.app.services.discovery.storage import save_manifest
@@ -37,7 +37,7 @@ def main() -> int:
     print(f"Found {len(organized)} images in organized folders.")
     print(f"Found {len(loose)} loose images in Pictures/ root.")
 
-    batches = group_by_product(organized)
+    batches = group_by_folder(organized)
 
     # 3. Smart-group loose photos by physical product using AI
     if loose:
