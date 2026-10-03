@@ -17,7 +17,8 @@ APP_ID = os.getenv("EBAY_APP_ID")
 CERT_ID = os.getenv("EBAY_CERT_ID")
 REFRESH_TOKEN = os.getenv("EBAY_REFRESH_TOKEN")
 
-TOKEN_ENDPOINT = "https://api.sandbox.ebay.com/identity/v1/oauth2/token"
+EBAY_DOMAIN = os.getenv("EBAY_DOMAIN", "https://api.sandbox.ebay.com")
+TOKEN_ENDPOINT = f"{EBAY_DOMAIN}/identity/v1/oauth2/token"
 
 
 def update_env(key: str, value: str):

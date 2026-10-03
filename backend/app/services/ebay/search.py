@@ -63,10 +63,10 @@ async def search_ebay(
     except httpx.HTTPStatusError as e:
         raise Exception(
             f"eBay API rejected the request (Status {e.response.status_code}). Check server logs."
-        )
+        ) from e
     except Exception as e:
         app_logger.error(f"eBay Search Error: {e}")
-        raise Exception("Failed to connect to eBay")
+        raise Exception("Failed to connect to eBay") from e
 
     # Map eBay response to our Pydantic models
     products = []

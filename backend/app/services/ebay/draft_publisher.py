@@ -62,7 +62,7 @@ def get_first_location_key() -> str:
             headers=get_headers(),
             timeout=15.0,
         ).json()
-        locations = res.get("merchantLocations", [])
+        locations = res.get("locations", [])
         if locations:
             key = locations[0].get("merchantLocationKey", "DEFAULT")
             app_logger.info(f"Using existing location key: {key}")

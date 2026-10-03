@@ -1,3 +1,114 @@
 {
-    "additionalProp1": {}
+    "sku": "05277",
+    "status": "listed",
+    "garment_type": "Shirt",
+    "brand": "CREMIEUX PREMIUM DENIM",
+    "size": "L",
+    "color": "Multi-color Paisley",
+    "material": "100% Cotton",
+    "department": "Men",
+    "condition": "New without tags, Store Display",
+    "condition_notes": "Retail overstock garment with vibrant paisley pattern. No visible defects, stains, holes, or signs of wear observed. Appears to be in new condition with typical storage/display characteristics.",
+    "measurements": {
+        "pit_to_pit": 24,
+        "length": 31,
+        "sleeve": null,
+        "waist": null,
+        "inseam": null
+    },
+    "title": "Cremieux Premium Denim Men's L Paisley Shirt 100% Cotton Multi-Color",
+    "description": "<div style='font-family: Arial, sans-serif; color: #333;'><h2>Cremieux Premium Denim Men's Paisley Shirt - Size L</h2><p>Elevate your wardrobe with this stunning <strong>Cremieux Premium Denim</strong> shirt featuring a vibrant multi-color paisley pattern. Crafted from <strong>100% cotton</strong> for superior comfort and breathability, this shirt is perfect for any occasion.</p><h3>Condition</h3><p><strong>New without tags, Store Display</strong><br>Retail overstock garment with vibrant paisley pattern. No visible defects, stains, holes, or signs of wear observed. Appears to be in new condition with typical storage/display characteristics.</p><h3>Measurements</h3><ul><li><strong>Pit-to-Pit:</strong> 24 inches</li><li><strong>Length:</strong> 31 inches</li></ul><h3>Product Details</h3><ul><li><strong>Brand:</strong> Cremieux Premium Denim</li><li><strong>Size:</strong> Large</li><li><strong>Color:</strong> Multi-color Paisley</li><li><strong>Material:</strong> 100% Cotton</li><li><strong>Department:</strong> Men's</li></ul><p>Don't miss this opportunity to own a premium quality shirt at a great value!</p></div>",
+    "category": null,
+    "item_specifics": {
+        "Condition": "New without tags",
+        "Brand": "Cremieux",
+        "Department": "Men",
+        "Size Type": "Regular",
+        "Size": "L",
+        "Material": "100% Cotton",
+        "Pattern": "Paisley",
+        "Color": "Multi-color",
+        "Sleeve Length": "Long Sleeve",
+        "Fit": "Regular",
+        "Style": "Casual Shirt"
+    },
+    "photos": {
+        "sku_photo": "IMG_2765.jpg",
+        "tag_photos": [
+            "IMG_2766.jpg",
+            "IMG_2771.jpg",
+            "IMG_2769.jpg"
+        ],
+        "measurement_photos": [
+            "IMG_2767.jpg",
+            "IMG_2768.jpg"
+        ],
+        "defect_photos": [],
+        "front_photo": "IMG_2772.jpg",
+        "back_photo": "IMG_2774.jpg",
+        "detail_photos": []
+    },
+    "raw_images": [
+        "IMG_2765.jpg",
+        "IMG_2766.jpg",
+        "IMG_2771.jpg",
+        "IMG_2772.jpg",
+        "IMG_2773.jpg",
+        "IMG_2774.jpg",
+        "IMG_2775.jpg",
+        "IMG_2767.jpg",
+        "IMG_2768.jpg",
+        "IMG_2769.jpg",
+        "IMG_2770.jpg"
+    ],
+    "created_draft": false,
+    "uploaded_to_ebay": true,
+    "ebay": {
+        "images": {
+            "IMG_2772.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/mcgAAeSwBk1qwWD2/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:09:26Z"
+            },
+            "IMG_2774.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/-qUAAeSwcAxqwWD4/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:09:28Z"
+            },
+            "IMG_2766.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/~L8AAeSws5hqwWD5/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:09:29Z"
+            },
+            "IMG_2771.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/mIUAAeSwMXhqwWD7/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:09:31Z"
+            },
+            "IMG_2769.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/H3AAAeSw0LNqwWD9/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:09:33Z"
+            },
+            "IMG_2767.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/~agAAeSwA7xqwWD-/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:09:35Z"
+            },
+            "IMG_2768.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/5xwAAeSwAvNqwWEA/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:09:36Z"
+            },
+            "IMG_2773.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/~Q0AAeSws5hqwWED/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:09:39Z"
+            },
+            "IMG_2775.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/n40AAeSw~2dqwWEF/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:09:41Z"
+            },
+            "IMG_2770.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/lScAAeSwVnZqwWEG/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:09:42Z"
+            }
+        },
+        "category_id": "57990",
+        "seller_hub_exported_at": "2026-10-03T20:59:58+00:00",
+        "listed_via": "seller_hub",
+        "published_at": "2026-10-03"
+    }
 }

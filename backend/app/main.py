@@ -4,11 +4,11 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
-app = FastAPI(title="ListingAI Review Dashboard")
-
-# Import routers
+# Imports MUST be at the top to satisfy the linter and prevent routing ghosts
 from backend.app.api.drafts import router as drafts_router
 from backend.app.api.routes import router as products_router
+
+app = FastAPI(title="ListingAI Review Dashboard")
 
 # Register routers
 app.include_router(products_router)
@@ -22,10 +22,14 @@ for route in app.routes:
         print(f"  {list(route.methods)} {route.path}")
 print("=" * 60)
 
-# Static files
+# Calculate paths
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 static_dir = PROJECT_ROOT / "static"
 static_dir.mkdir(exist_ok=True)
+
+print(f"PROJECT ROOT: {PROJECT_ROOT}")
+print(f"HTML EXISTS: {(static_dir / 'index.html').exists()}")
+
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 

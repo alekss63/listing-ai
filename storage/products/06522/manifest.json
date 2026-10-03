@@ -1,6 +1,6 @@
 {
     "sku": "06522",
-    "status": "discovered",
+    "status": "listed",
     "garment_type": "T-Shirt",
     "brand": "Oakley",
     "size": "M",
@@ -64,6 +64,54 @@
         "IMG_2763.jpg",
         "IMG_2764.jpg"
     ],
-    "created_draft": false,
-    "uploaded_to_ebay": false
+    "created_draft": true,
+    "uploaded_to_ebay": true,
+    "ebay": {
+        "images": {
+            "IMG_2758.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/~z0AAeSws5hqwWGB/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:11:45Z"
+            },
+            "IMG_2761.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/nmkAAeSw-bxqwWGC/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:11:46Z"
+            },
+            "IMG_2754.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/Ib0AAeSw0LNqwWGD/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:11:47Z"
+            },
+            "IMG_2759.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/~r0AAeSwZ4ZqwWGE/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:11:48Z"
+            },
+            "IMG_2763.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/obcAAeSw~2dqwWGF/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:11:49Z"
+            },
+            "IMG_2764.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/nZsAAeSwcZpqwWGG/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:11:50Z"
+            },
+            "IMG_2756.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/n48AAeSwLjhqwWGH/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:11:51Z"
+            },
+            "IMG_2757.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/mi4AAeSwG5NqwWGI/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:11:52Z"
+            },
+            "IMG_2760.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/~DwAAeSwkIlqwWGJ/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:11:53Z"
+            },
+            "IMG_2762.jpg": {
+                "imageUrl": "https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/~EIAAeSwkIlqwWGK/$_1.JPG?set_id=8800005007",
+                "expirationDate": "2026-11-02T20:11:54Z"
+            }
+        },
+        "category_id": "15687",
+        "seller_hub_exported_at": "2026-10-03T20:59:58+00:00",
+        "listed_via": "seller_hub",
+        "published_at": "2026-10-03"
+    }
 }

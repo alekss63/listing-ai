@@ -30,7 +30,7 @@ def ensure_location():
         f"{EBAY_DOMAIN}/sell/inventory/v1/location", headers=get_headers(), timeout=15.0
     )
     if res.status_code == 200:
-        locations = res.json().get("merchantLocations", [])
+        locations = res.json().get("locations", [])
         if locations:
             print(
                 f"✅ Location already exists: {locations[0].get('merchantLocationKey')}"

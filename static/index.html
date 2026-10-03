@@ -13,24 +13,142 @@
         .card p { margin: 0; color: #6b7280; font-size: 0.9rem; }
         .hidden { display: none; }
         .btn { padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; color: white; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-blue { background: #3b82f6; }
         .btn-gray { background: #6b7280; }
         .btn-green { background: #10b981; }
+        .btn-orange { background: #f59e0b; }
+        .btn-red { background: #dc2626; }
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151; }
-        .form-group input, .form-group textarea { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px; font-family: inherit; font-size: 1rem; box-sizing: border-box; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px; font-family: inherit; font-size: 1rem; box-sizing: border-box; }
         .form-group textarea { height: 150px; font-family: monospace; }
         .panel { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .preview-box { border: 1px solid #d1d5db; border-radius: 4px; padding: 1rem; min-height: 150px; background: #fff; }
         .preview-box:focus { outline: 2px solid #3b82f6; }
         .hint { font-size: 0.8rem; color: #6b7280; margin-top: 0.25rem; }
+        .hint.over { color: #dc2626; font-weight: 600; }
+
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .tab { background: #e5e7eb; color: #374151; }
+        .tab.active { background: #1f2937; color: white; }
+        .toolbar { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+
+        .draft-card { display: flex; gap: 1rem; align-items: center; }
+        .draft-card img { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; background: #e5e7eb; flex-shrink: 0; }
+        .draft-card .info { flex: 1; min-width: 0; }
+        .badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; margin-right: 0.4rem; }
+        .badge-no_draft { background: #e5e7eb; color: #374151; }
+        .badge-draft { background: #dbeafe; color: #1e40af; }
+        .badge-on_ebay { background: #fef3c7; color: #92400e; }
+        .badge-listed { background: #d1fae5; color: #065f46; }
+        .badge-changes { background: #fee2e2; color: #991b1b; }
+
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.5rem; }
+        .photo-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; }
+        .photo-grid .main { outline: 3px solid #10b981; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .notice { padding: 0.75rem 1rem; border-radius: 6px; margin: 1rem 0; white-space: pre-wrap; word-break: break-word; }
+        .notice-info { background: #dbeafe; color: #1e40af; }
+        .notice-ok { background: #d1fae5; color: #065f46; }
+        .notice-err { background: #fee2e2; color: #991b1b; }
+        .ai-notes { font-size: 0.9rem; color: #4b5563; background: #f9fafb; border-left: 3px solid #9ca3af; padding: 0.5rem 0.75rem; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🤖 ListingAI Review Dashboard</h1>
 
-        <div id="list-view">
+        <div class="tabs">
+            <button class="btn tab active" id="tab-drafts" onclick="showTab('drafts')">eBay Drafts</button>
+            <button class="btn tab" id="tab-products" onclick="showTab('products')">Products</button>
+        </div>
+
+        <!-- ===== Drafts: the stand-in for Seller Hub Drafts ===== -->
+        <div id="drafts-list-view">
+            <div class="toolbar">
+                <button class="btn btn-blue" onclick="fetchDrafts()">Refresh</button>
+                <button class="btn btn-green" id="btn-seller-hub" onclick="downloadSellerHubFile()">📋 Download Seller Hub Drafts File</button>
+                <span class="hint">Generate → review & edit → push to eBay (unpublished, with photos) → publish live.</span>
+            </div>
+            <div id="seller-hub-help" class="notice notice-info hidden">
+                <strong>To see these in Seller Hub → Drafts:</strong>
+                1. Open <a href="https://www.ebay.com/sh/reports/uploads" target="_blank">Seller Hub → Reports → Uploads</a>
+                2. Click <strong>Upload template</strong> and choose the file you just downloaded
+                3. When asked for the template type, pick <strong>Create drafts</strong>, then Upload
+                4. After a few minutes they appear in <a href="https://www.ebay.com/sh/lst/drafts" target="_blank">Seller Hub → Drafts</a>.
+                Upload each file only once - every upload creates new drafts.
+            </div>
+            <div id="draft-list" style="margin-top: 1rem;"></div>
+        </div>
+
+        <div id="draft-edit-view" class="hidden">
+            <button class="btn btn-gray" onclick="showDraftList()">← Back to Drafts</button>
+            <h2 id="draft-heading" style="margin-top: 1rem;"></h2>
+            <div id="draft-status"></div>
+            <div id="draft-notice" class="notice hidden"></div>
+
+            <div class="panel" style="margin-top: 1rem;">
+                <div class="form-group">
+                    <label>Listing Photos</label>
+                    <div id="draft-photos" class="photo-grid"></div>
+                    <div class="hint">Uploaded to eBay in this order when you push. The outlined photo is the main image. The SKU sticker photo is never listed.</div>
+                </div>
+
+                <div id="draft-empty" class="hidden">
+                    <p>No draft yet for this product.</p>
+                </div>
+
+                <div id="draft-form">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="d-title" oninput="updateTitleCount()">
+                        <div class="hint" id="d-title-count"></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Price (USD)</label>
+                            <input type="number" step="0.01" min="0" id="d-price">
+                        </div>
+                        <div class="form-group">
+                            <label>Condition</label>
+                            <select id="d-condition"></select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group"><label>Brand</label><input type="text" id="d-brand"></div>
+                        <div class="form-group"><label>Size</label><input type="text" id="d-size"></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group"><label>Color</label><input type="text" id="d-color"></div>
+                        <div class="form-group"><label>Material</label><input type="text" id="d-material"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description (raw HTML)</label>
+                        <textarea id="d-description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Live Visual Preview (click inside to edit)</label>
+                        <div id="d-preview" class="preview-box" contenteditable="true"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>AI Notes</label>
+                        <div id="d-notes" class="ai-notes"></div>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <button class="btn btn-gray" id="btn-generate" onclick="generateDraft()">✨ Generate with AI</button>
+                    <button class="btn btn-green" id="btn-save" onclick="saveDraft()">💾 Save Draft</button>
+                    <button class="btn btn-orange" id="btn-push" onclick="pushDraft()">⬆️ Push to eBay</button>
+                    <button class="btn btn-red" id="btn-publish" onclick="publishDraft()">🚀 Publish Live</button>
+                </div>
+                <div class="hint">Push creates or updates an <strong>unpublished</strong> offer (buyers can't see it). Only Publish makes it a live listing.</div>
+            </div>
+        </div>
+
+        <!-- ===== Products: raw manifest editor ===== -->
+        <div id="list-view" class="hidden">
             <button class="btn btn-blue" onclick="fetchProducts()">Refresh List</button>
             <div id="product-list" style="margin-top: 1rem;"></div>
         </div>
@@ -63,6 +181,340 @@
     </div>
 
     <script>
+        // ===================== Shared =====================
+        const VIEWS = ['drafts-list-view', 'draft-edit-view', 'list-view', 'edit-view'];
+
+        function showView(id) {
+            VIEWS.forEach(v => document.getElementById(v).classList.toggle('hidden', v !== id));
+        }
+
+        function showTab(tab) {
+            document.getElementById('tab-drafts').classList.toggle('active', tab === 'drafts');
+            document.getElementById('tab-products').classList.toggle('active', tab === 'products');
+            if (tab === 'drafts') { showView('drafts-list-view'); fetchDrafts(); }
+            else { showView('list-view'); fetchProducts(); }
+        }
+
+        function imageUrl(sku, filename, thumb = true) {
+            return `/api/products/${encodeURIComponent(sku)}/images/${encodeURIComponent(filename)}${thumb ? '?thumb=true' : ''}`;
+        }
+
+        // Calls the API and returns the parsed body, throwing the server's error detail
+        async function api(path, options = {}) {
+            const res = await fetch(path, options);
+            const body = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                const detail = typeof body.detail === 'string' ? body.detail : JSON.stringify(body.detail ?? body);
+                throw new Error(detail || `HTTP ${res.status}`);
+            }
+            return body;
+        }
+
+        // ===================== Drafts =====================
+        const STATUS_LABELS = {
+            no_draft: 'No draft',
+            draft: 'Draft (local)',
+            on_ebay: 'On eBay — unpublished',
+            listed: 'Live on eBay',
+        };
+        const CONDITIONS = ['New with tags', 'New without tags', 'New with imperfections', 'Pre-owned'];
+
+        let currentDraftSku = '';
+        let currentDraft = null;
+        let currentState = {};
+
+        function statusBadges(item) {
+            const wrap = document.createElement('span');
+            const badge = document.createElement('span');
+            badge.className = `badge badge-${item.status}`;
+            badge.textContent = STATUS_LABELS[item.status] || item.status;
+            wrap.appendChild(badge);
+            if (item.seller_hub_exported_at) {
+                const exported = document.createElement('span');
+                exported.className = 'badge badge-draft';
+                exported.textContent = 'In Seller Hub file';
+                wrap.appendChild(exported);
+            }
+            if (item.has_unpushed_changes) {
+                const changes = document.createElement('span');
+                changes.className = 'badge badge-changes';
+                changes.textContent = 'Unpushed edits';
+                wrap.appendChild(changes);
+            }
+            return wrap;
+        }
+
+        async function fetchDrafts() {
+            const list = document.getElementById('draft-list');
+            try {
+                const items = await api('/api/drafts');
+                list.innerHTML = '';
+                if (items.length === 0) {
+                    list.innerHTML = '<p>No products found in storage.</p>';
+                    return;
+                }
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card draft-card';
+                    card.onclick = () => openDraft(item.sku);
+
+                    const img = document.createElement('img');
+                    if (item.thumbnail) img.src = imageUrl(item.sku, item.thumbnail);
+                    img.alt = '';
+
+                    const info = document.createElement('div');
+                    info.className = 'info';
+                    const title = document.createElement('h3');
+                    title.textContent = item.title || 'Untitled';
+                    const meta = document.createElement('p');
+                    const price = item.price != null ? `$${Number(item.price).toFixed(2)}` : 'No price';
+                    meta.textContent = `SKU: ${item.sku} | ${price} | ${item.condition || 'No condition'}`;
+                    const status = document.createElement('p');
+                    status.style.marginTop = '0.4rem';
+                    status.appendChild(statusBadges(item));
+
+                    info.append(title, meta, status);
+                    card.append(img, info);
+                    list.appendChild(card);
+                });
+            } catch (err) {
+                list.textContent = `Failed to load drafts: ${err.message}`;
+            }
+        }
+
+        async function downloadSellerHubFile() {
+            const button = document.getElementById('btn-seller-hub');
+            button.disabled = true;
+            button.textContent = '⏳ Uploading photos & building file…';
+            try {
+                const res = await fetch('/api/drafts/seller-hub.csv');
+                if (!res.ok) {
+                    const body = await res.json().catch(() => ({}));
+                    throw new Error(body.detail || `HTTP ${res.status}`);
+                }
+                const blob = await res.blob();
+                const match = /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') || '');
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = match ? match[1] : 'seller-hub-drafts.csv';
+                link.click();
+                URL.revokeObjectURL(link.href);
+                document.getElementById('seller-hub-help').classList.remove('hidden');
+                fetchDrafts();
+            } catch (err) {
+                alert(`Couldn't build the Seller Hub file: ${err.message}`);
+            } finally {
+                button.disabled = false;
+                button.textContent = '📋 Download Seller Hub Drafts File';
+            }
+        }
+
+        function showDraftList() {
+            showView('drafts-list-view');
+            fetchDrafts();
+        }
+
+        function notify(message, kind = 'info') {
+            const box = document.getElementById('draft-notice');
+            box.className = `notice notice-${kind}`;
+            box.textContent = message;
+        }
+
+        function clearNotice() {
+            document.getElementById('draft-notice').className = 'notice hidden';
+        }
+
+        function setBusy(busy) {
+            ['btn-generate', 'btn-save', 'btn-push', 'btn-publish'].forEach(id => {
+                document.getElementById(id).disabled = busy;
+            });
+            if (!busy) updateButtons();
+        }
+
+        function updateButtons() {
+            const hasDraft = !!currentDraft;
+            document.getElementById('btn-save').disabled = !hasDraft;
+            // Listed from Seller Hub: edits happen there, a push would make a second offer
+            const externallyListed = !!currentState.listed_via;
+            document.getElementById('btn-push').disabled = !hasDraft || externallyListed;
+            document.getElementById('btn-push').textContent =
+                currentState.status === 'listed' ? '⬆️ Push Changes to Live Listing' : '⬆️ Push to eBay';
+            document.getElementById('btn-publish').disabled =
+                currentState.status !== 'on_ebay' || currentState.has_unpushed_changes;
+            document.getElementById('btn-generate').textContent = hasDraft ? '✨ Regenerate with AI' : '✨ Generate with AI';
+        }
+
+        function renderStatus() {
+            const el = document.getElementById('draft-status');
+            el.innerHTML = '';
+            el.appendChild(statusBadges(currentState));
+            if (currentState.listed_via === 'seller_hub') {
+                const link = document.createElement('a');
+                link.href = 'https://www.ebay.com/sh/lst/active';
+                link.target = '_blank';
+                link.textContent = 'Listed via Seller Hub - manage it there ↗';
+                el.appendChild(link);
+            }
+            if (currentState.listing_url) {
+                const link = document.createElement('a');
+                link.href = currentState.listing_url;
+                link.target = '_blank';
+                link.textContent = 'View on eBay ↗';
+                el.appendChild(link);
+            }
+        }
+
+        function fillForm(draft) {
+            document.getElementById('draft-empty').classList.toggle('hidden', !!draft);
+            document.getElementById('draft-form').classList.toggle('hidden', !draft);
+            if (!draft) return;
+
+            const specifics = draft.item_specifics || {};
+            document.getElementById('d-title').value = draft.title || '';
+            document.getElementById('d-price').value = draft.suggested_price ?? '';
+            document.getElementById('d-brand').value = specifics.brand || '';
+            document.getElementById('d-size').value = specifics.size || '';
+            document.getElementById('d-color').value = specifics.color || '';
+            document.getElementById('d-material').value = specifics.material || '';
+            document.getElementById('d-description').value = draft.description || '';
+            document.getElementById('d-preview').innerHTML = draft.description || '';
+            document.getElementById('d-notes').textContent = draft.ai_notes || '—';
+
+            // Keep an AI-written condition selectable even if it isn't a standard one
+            const select = document.getElementById('d-condition');
+            select.innerHTML = '';
+            const options = CONDITIONS.includes(draft.condition) || !draft.condition
+                ? CONDITIONS : [draft.condition, ...CONDITIONS];
+            options.forEach(c => select.add(new Option(c, c, false, c === draft.condition)));
+
+            updateTitleCount();
+        }
+
+        function readForm() {
+            const orNull = id => document.getElementById(id).value.trim() || null;
+            return {
+                ...currentDraft,
+                sku: currentDraftSku,
+                title: document.getElementById('d-title').value.trim(),
+                suggested_price: parseFloat(document.getElementById('d-price').value) || 0,
+                condition: document.getElementById('d-condition').value,
+                description: document.getElementById('d-description').value,
+                item_specifics: {
+                    ...(currentDraft.item_specifics || {}),
+                    brand: orNull('d-brand'),
+                    size: orNull('d-size'),
+                    color: orNull('d-color'),
+                    material: orNull('d-material'),
+                },
+            };
+        }
+
+        function updateTitleCount() {
+            const len = document.getElementById('d-title').value.length;
+            const hint = document.getElementById('d-title-count');
+            hint.textContent = `${len} / 80 characters`;
+            hint.classList.toggle('over', len > 80);
+        }
+
+        async function openDraft(sku) {
+            currentDraftSku = sku;
+            clearNotice();
+            showView('draft-edit-view');
+            document.getElementById('draft-heading').textContent = `SKU ${sku}`;
+            await reloadDraft();
+        }
+
+        async function reloadDraft() {
+            const data = await api(`/api/drafts/${encodeURIComponent(currentDraftSku)}`);
+            currentDraft = data.draft;
+            currentState = data;
+
+            const grid = document.getElementById('draft-photos');
+            grid.innerHTML = '';
+            data.photos.forEach((name, i) => {
+                const link = document.createElement('a');
+                link.href = imageUrl(currentDraftSku, name, false);
+                link.target = '_blank';
+                const img = document.createElement('img');
+                img.src = imageUrl(currentDraftSku, name);
+                img.title = name;
+                if (i === 0) img.className = 'main';
+                link.appendChild(img);
+                grid.appendChild(link);
+            });
+            if (data.photos.length === 0) grid.textContent = 'No photos found for this product.';
+
+            fillForm(currentDraft);
+            renderStatus();
+            updateButtons();
+        }
+
+        async function saveDraft({ quiet = false } = {}) {
+            const draft = readForm();
+            await api(`/api/drafts/${encodeURIComponent(currentDraftSku)}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(draft),
+            });
+            if (!quiet) notify('Draft saved.' + (currentState.offer_id ? ' Push to send the changes to eBay.' : ''), 'ok');
+            await reloadDraft();
+        }
+
+        async function runAction(label, fn) {
+            setBusy(true);
+            notify(label, 'info');
+            try {
+                await fn();
+            } catch (err) {
+                notify(err.message, 'err');
+            } finally {
+                setBusy(false);
+            }
+        }
+
+        function generateDraft() {
+            if (currentDraft && !confirm('Replace the current draft with a new AI-generated one?')) return;
+            runAction('Generating with local AI… this can take a minute.', async () => {
+                await api(`/api/drafts/generate/${encodeURIComponent(currentDraftSku)}`, { method: 'POST' });
+                await reloadDraft();
+                notify('New draft generated. Review it before pushing.', 'ok');
+            });
+        }
+
+        function pushDraft() {
+            runAction('Saving, uploading photos and pushing to eBay…', async () => {
+                // Push what's on screen, not what was last saved
+                await saveDraft({ quiet: true });
+                const result = await api(`/api/drafts/push-to-ebay/${encodeURIComponent(currentDraftSku)}`, { method: 'POST' });
+                await reloadDraft();
+                const category = result.ebay_category_id ? `category ${result.ebay_category_id}` : 'no category suggested';
+                notify(`Pushed to eBay: offer ${result.ebay_offer_id}, ${result.ebay_image_count} photos, ${category}.` +
+                    (currentState.status === 'listed' ? ' The live listing has been updated.' : ' Not visible to buyers until you publish.'), 'ok');
+            });
+        }
+
+        function publishDraft() {
+            const duplicateWarning = currentState.seller_hub_exported_at
+                ? '\n\nThis product was also exported to a Seller Hub drafts file. If you list that draft in Seller Hub too, you will have TWO listings - delete one of them.'
+                : '';
+            if (!confirm('Publish this as a LIVE eBay listing? Buyers will be able to see and purchase it.' + duplicateWarning)) return;
+            runAction('Publishing to eBay…', async () => {
+                const result = await api(`/api/drafts/publish/${encodeURIComponent(currentDraftSku)}`, { method: 'POST' });
+                await reloadDraft();
+                const warnings = result.warnings?.length ? `\nWarnings: ${JSON.stringify(result.warnings)}` : '';
+                notify(`Live on eBay: ${result.listing_url}${warnings}`, 'ok');
+            });
+        }
+
+        // Two-way sync between raw HTML textarea and visual preview
+        document.getElementById('d-description').addEventListener('input', function () {
+            document.getElementById('d-preview').innerHTML = this.value;
+        });
+        document.getElementById('d-preview').addEventListener('input', function () {
+            document.getElementById('d-description').value = this.innerHTML;
+        });
+
+        // ===================== Products =====================
         let currentSku = "";
         let currentData = {};
 
@@ -110,13 +562,11 @@
             document.getElementById('edit-description').value = currentData.description || '';
             document.getElementById('html-preview').innerHTML = currentData.description || '<em>No description yet.</em>';
 
-            document.getElementById('list-view').classList.add('hidden');
-            document.getElementById('edit-view').classList.remove('hidden');
+            showView('edit-view');
         }
 
         function showList() {
-            document.getElementById('list-view').classList.remove('hidden');
-            document.getElementById('edit-view').classList.add('hidden');
+            showView('list-view');
         }
 
         async function saveChanges() {
@@ -124,6 +574,8 @@
             currentData.condition = document.getElementById('edit-condition').value;
             // Save the visually edited HTML from the preview box
             currentData.description = document.getElementById('html-preview').innerHTML;
+            // eBay state is owned by the drafts API; don't overwrite it with a stale copy
+            delete currentData.ebay;
 
             const res = await fetch(`/api/products/${currentSku}`, {
                 method: 'POST',
@@ -145,7 +597,7 @@
             document.getElementById('edit-description').value = this.innerHTML;
         });
 
-        fetchProducts();
+        fetchDrafts();
     </script>
 </body>
 </html>
