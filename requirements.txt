@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy
+alembic
+pillow
+opencv-python
+loguru
+pydantic
+pydantic-settings
+python-dotenv
+anthropic
+httpx[http2]
+rapidfuzz
+easyocr

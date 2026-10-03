@@ -1,0 +1,42 @@
+# Hooks run the tools pinned in requirements-dev.txt straight from .venv.
+# They are declared as local/system hooks rather than remote repos so the
+# versions can never drift from the venv, and so hooks work offline.
+#
+# Run against everything:  .venv/bin/pre-commit run --all-files
+# Skip once:               git commit --no-verify
+
+repos:
+  - repo: local
+    hooks:
+      - id: forbid-env-files
+        name: block .env files from being committed
+        language: fail
+        entry: >-
+          refusing to commit a .env file - secrets belong outside git
+          (it is listed in .gitignore)
+        files: '(^|/)\.env($|\.)'
+
+      - id: ruff
+        name: ruff (lint + autofix)
+        language: system
+        entry: .venv/bin/ruff check --fix --force-exclude
+        types_or: [python, pyi]
+
+      - id: black
+        name: black (format)
+        language: system
+        entry: .venv/bin/black
+        types_or: [python, pyi]
+
+      # Opt-in only: the codebase is not type-clean yet, so a blocking hook
+      # would reject every commit. Run it deliberately with
+      #   .venv/bin/pre-commit run --hook-stage manual mypy
+      # and drop `stages` once the backlog is cleared.
+      - id: mypy
+        name: mypy (type check)
+        language: system
+        entry: .venv/bin/mypy
+        types_or: [python, pyi]
+        # Checked as a whole package rather than per-file so imports resolve.
+        pass_filenames: false
+        stages: [manual]

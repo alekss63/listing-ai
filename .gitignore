@@ -1,0 +1,28 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Virtual environment ---
+.venv/
+
+# --- Secrets (NEVER commit your API key) ---
+.env
+
+# --- OS / IDE / AI tools ---
+.DS_Store
+.vscode/
+.claude/
+
+# --- Local photo inbox / archive / logs / temp ---
+Pictures/
+Processed/
+logs/
+temp/
+drafts/
+
+# --- Storage: keep the JSON manifests, ignore the copied photos ---
+storage/products/*/images/
